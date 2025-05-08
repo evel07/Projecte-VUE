@@ -1,99 +1,199 @@
 <template>
-    <div>
+    <div class="api-page">
       <HeaderNavbar />
-      <h2>Characters from Attack on Titan</h2>
-      <div v-if="loading">Loading...</div>
-      <div v-else>
-        <ul>
-          <li v-for="character in characters" :key="character.id">
-            <h3>{{ character.name }}</h3>
-            <p>{{ character.description || 'No description available' }}</p>
-            <!-- Comprova si el camp de la imatge existeix i si la URL és correcta -->
-            <img v-if="character.image_url" :src="character.image_url" :alt="character.name" />
-          </li>
-        </ul>
-        <!-- Paginació -->
-        <button v-if="nextPage" @click="loadMoreCharacters">Load more</button>
-      </div>
+      <main class="content">
+        <h2>API de Attack on Titan</h2>
+  
+        <div v-if="loading" class="loading">Carregant...</div>
+  
+        <div v-else>
+          <ul class="character-list">
+            <li
+              v-for="character in characters"
+              :key="character.id"
+              class="character-card"
+            >
+              <img
+                v-if="character.img && isValidImageUrl(character.img)"
+                :src="character.img"
+                :alt="character.name"
+                class="character-image"
+              />
+              <img
+                v-else
+                src="https://via.placeholder.com/350x350?text=Imatge+no+disponible"
+                alt="Imatge no disponible"
+                class="character-image"
+              />
+              <div class="character-info">
+                <h3>{{ character.name }}</h3>
+                <p>{{ character.description || 'Descripció no disponible' }}</p>
+              </div>
+            </li>
+          </ul>
+  
+          <!-- Botó de paginació -->
+          <button
+            v-if="nextPage"
+            @click="loadMoreCharacters"
+            class="load-more"
+          >
+            Carregar més
+          </button>
+        </div>
+      </main>
       <FooterInfo />
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  import HeaderNavbar from '@/components/Header.vue';
-  import FooterInfo from '@/components/Footer.vue';
+  import axios from 'axios'
+  import HeaderNavbar from '@/components/Header.vue'
+  import FooterInfo from '@/components/Footer.vue'
   
   export default {
     name: 'ApiData',
     components: {
       HeaderNavbar,
-      FooterInfo,
+      FooterInfo
     },
     data() {
       return {
-        characters: [], // Emmagatzemem les dades dels personatges
-        loading: true, // Inicialment estem carregant les dades
-        error: null, // Error de la petició
-        nextPage: null, // Paginació
-      };
+        characters: [],
+        loading: true,
+        error: null,
+        nextPage: null
+      }
     },
     mounted() {
-      // Carreguem els personatges quan el component es monta
-      this.loadCharacters('https://api.attackontitanapi.com/characters');
+      this.loadCharacters('https://api.attackontitanapi.com/characters')
     },
     methods: {
       loadCharacters(url) {
-        axios.get(url)
-          .then(response => {
-            console.log(response.data.results); // Comprova el format dels personatges
-            this.characters = this.characters.concat(response.data.results); // Afegim els resultats
-            this.nextPage = response.data.info.next_page; // Paginació
-            this.loading = false; // Està carregat
+        axios
+          .get(url)
+          .then((response) => {
+            this.characters = this.characters.concat(response.data.results)
+            this.nextPage = response.data.info.next_page
+            this.loading = false
           })
-          .catch(error => {
-            this.error = 'Error fetching data'; // Mostrem un missatge si hi ha error
-            console.error(error); // Mostrem més detalls sobre l'error
-            this.loading = false;
-          });
+          .catch((error) => {
+            this.error = 'Error carregant les dades'
+            console.error(error)
+            this.loading = false
+          })
       },
       loadMoreCharacters() {
         if (this.nextPage) {
-          this.loadCharacters(this.nextPage); // Carreguem més personatges si hi ha una següent pàgina
+          this.loadCharacters(this.nextPage)
         }
+      },
+      isValidImageUrl(url) {
+        // Comprova si l'URL de la imatge és vàlida
+        return (url && url.startsWith('http') && (url.endsWith('.png') || url.endsWith('.jpg')));
       }
-    },
-  };
+    }
+  }
   </script>
   
   <style scoped>
-  /* Estils per mostrar les dades */
-  ul {
-    list-style-type: none;
+  .api-page {
+    background-color: #0d0d0d;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    color: #00cc66;
+    text-align: center;
+    margin-bottom: 40px;
+    text-shadow: 1px 1px 4px rgba(0, 204, 102, 0.4);
+  }
+  
+  .loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #aaaaaa;
+  }
+  
+  .character-list {
+    list-style: none;
     padding: 0;
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
   
-  li {
-    margin-bottom: 20px;
+  .character-card {
+    background-color: #1a1a1a;
+    border: 1px solid #00cc66;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 204, 102, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease;
   }
   
-  img {
-    max-width: 100%;
+  .character-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(0, 204, 102, 0.3);
+  }
+  
+  .character-image {
+    width: 100%;
     height: auto;
+    max-height: 300px;
+    object-fit: cover;
     border-radius: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #00cc66;
   }
   
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
+  .character-info {
+    text-align: center;
+  }
+  
+  .character-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #66ffb3;
+  }
+  
+  .character-info p {
+    font-size: 0.95rem;
+    margin-top: 10px;
+    color: #cccccc;
+  }
+  
+  .load-more {
+    display: block;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #006644;
     color: white;
-    border: none;
-    border-radius: 5px;
+    border: 2px solid #00cc66;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
   }
   
-  button:hover {
-    background-color: #45a049;
+  .load-more:hover {
+    background-color: #00cc66;
+    color: #0d0d0d;
   }
   </style>
   

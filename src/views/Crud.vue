@@ -2,34 +2,34 @@
   <div class="crud-page">
     <HeaderNavbar />
     <main class="content">
-      <h1>Manage Attack on Titan Characters</h1>
+      <h1>Control de personatges de Attack on Titan</h1>
 
       <!-- Formulari per afegir o editar personatge -->
       <div class="form-container">
-        <h2>{{ isEditing ? 'Edit Character' : 'Add New Character' }}</h2>
+        <h2>{{ isEditing ? 'Edita Personatge' : 'Afegeix un Nou Personatge' }}</h2>
         <form @submit.prevent="handleFormSubmit">
-          <label for="name">Name:</label>
+          <label for="name">Nom:</label>
           <input type="text" id="name" v-model="form.name" required />
 
-          <label for="surname">Surname:</label>
+          <label for="surname">Cognom:</label>
           <input type="text" id="surname" v-model="form.surname" required />
 
-          <label for="imageUrl">Image URL:</label>
+          <label for="imageUrl">URL de la Imatge:</label>
           <input type="url" id="imageUrl" v-model="form.imageUrl" required />
 
-          <button type="submit">{{ isEditing ? 'Save Changes' : 'Add Character' }}</button>
+          <button type="submit">{{ isEditing ? 'Desa Canvis' : 'Afegeix Personatge' }}</button>
         </form>
       </div>
 
       <!-- Llista de personatges -->
       <div class="characters-list">
-        <h2>Existing Characters</h2>
+        <h2>Personatges Existents</h2>
         <ul>
           <li v-for="(character, index) in characters" :key="index">
             <img :src="character.imageUrl" alt="Character Image" class="character-image" />
             <span>{{ character.name }} {{ character.surname }}</span>
-            <button @click="editCharacter(index)">Edit</button>
-            <button @click="deleteCharacter(index)">Delete</button>
+            <button @click="editCharacter(index)">Edita</button>
+            <button @click="deleteCharacter(index)">Esborra</button>
           </li>
         </ul>
       </div>
@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      characters: [],  // Array de personatges
+      characters: [],
       form: {
         name: '',
         surname: '',
@@ -58,56 +58,41 @@ export default {
       },
       isEditing: false,
       editIndex: null
-    };
+    }
   },
   mounted() {
-    // Carregar els personatges del localStorage quan el component es munta
-    const storedCharacters = localStorage.getItem('characters');
+    const storedCharacters = localStorage.getItem('characters')
     if (storedCharacters) {
-      this.characters = JSON.parse(storedCharacters);
+      this.characters = JSON.parse(storedCharacters)
     }
   },
   methods: {
-    // Afegeix o edita un personatge
     handleFormSubmit() {
       if (this.isEditing) {
-        // Modificar un personatge existent
-        this.characters[this.editIndex] = { ...this.form };
+        this.characters[this.editIndex] = { ...this.form }
       } else {
-        // Afegir un nou personatge
-        this.characters.push({ ...this.form });
+        this.characters.push({ ...this.form })
       }
-
-      // Guardar els canvis al localStorage
-      localStorage.setItem('characters', JSON.stringify(this.characters));
-
-      // Reseteja el formulari després de l'operació
-      this.resetForm();
+      localStorage.setItem('characters', JSON.stringify(this.characters))
+      this.resetForm()
     },
-
-    // Edita un personatge
     editCharacter(index) {
-      this.isEditing = true;
-      this.editIndex = index;
-      this.form = { ...this.characters[index] };
+      this.isEditing = true
+      this.editIndex = index
+      this.form = { ...this.characters[index] }
     },
-
-    // Esborra un personatge
     deleteCharacter(index) {
-      this.characters.splice(index, 1);
-      // Guardar els canvis al localStorage
-      localStorage.setItem('characters', JSON.stringify(this.characters));
+      this.characters.splice(index, 1)
+      localStorage.setItem('characters', JSON.stringify(this.characters))
     },
-
-    // Reseteja el formulari
     resetForm() {
       this.form = {
         name: '',
         surname: '',
         imageUrl: ''
-      };
-      this.isEditing = false;
-      this.editIndex = null;
+      }
+      this.isEditing = false
+      this.editIndex = null
     }
   }
 }
@@ -115,21 +100,39 @@ export default {
 
 <style scoped>
 .crud-page {
-  background-color: black;
-  color: white;
+  background-color: #0d0d0d;
+  color: #e0e0e0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .content {
   flex: 1;
-  padding: 40px;
+  padding: 40px 20px;
   text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #00cc66;
+  margin-bottom: 40px;
+  text-shadow: 1px 1px 4px rgba(0, 204, 102, 0.4);
+}
+
+h2 {
+  color: #66ffb3;
+  margin-bottom: 20px;
 }
 
 .form-container {
-  margin-bottom: 40px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 204, 102, 0.2);
+  margin-bottom: 50px;
 }
 
 form {
@@ -140,29 +143,37 @@ form {
 
 label {
   margin: 10px 0 5px;
+  font-weight: 600;
+  color: #cccccc;
 }
 
 input {
   margin-bottom: 20px;
   padding: 10px;
   font-size: 1rem;
-  width: 80%;
+  width: 90%;
   max-width: 400px;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #ff0000;
-  color: white;
-  border: none;
-  cursor: pointer;
+  border: 1px solid #00cc66;
   border-radius: 6px;
-  transition: background-color 0.3s ease;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
-button:hover {
-  background-color: #b30000;
+button[type="submit"] {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #006644;
+  color: white;
+  border: 2px solid #00cc66;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+button[type="submit"]:hover {
+  background-color: #009966;
+  transform: scale(1.05);
 }
 
 .characters-list {
@@ -174,23 +185,51 @@ button:hover {
 .characters-list ul {
   list-style-type: none;
   padding: 0;
+  width: 100%;
 }
 
 .characters-list li {
+  background-color: #1a1a1a;
+  border: 1px solid #00cc66;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin: 10px 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 10px 0;
+  justify-content: space-between;
+  color: #f0f0f0;
+  box-shadow: 0 0 15px rgba(0, 204, 102, 0.1);
 }
 
 .character-image {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  margin-right: 10px;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #00cc66;
 }
 
-button {
+.characters-list span {
+  flex: 1;
+  text-align: left;
+  font-size: 1.1rem;
+}
+
+.characters-list button {
+  padding: 8px 14px;
+  font-size: 0.9rem;
   margin-left: 10px;
+  background-color: transparent;
+  border: 2px solid #00cc66;
+  color: #00cc66;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.characters-list button:hover {
+  background-color: #00cc66;
+  color: #0d0d0d;
 }
 </style>
